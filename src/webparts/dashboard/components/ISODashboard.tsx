@@ -21,6 +21,7 @@ import { REGISTRIES } from "../config/registryConfig";
 import ThresholdControl from "./ThresholdControl";
 import RegistryDashboardView from "./RegistryDashboardView";
 import OverviewPage from "./OverviewPage";
+import UpcomingEventsSection from "./UpcomingEventsSection";
 import styles from "./ISODashboard.module.scss";
 
 const { Title } = Typography;
@@ -114,6 +115,9 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
 
           {/* ── Main content ─────────────────────────────────────────────── */}
           <div className={styles.mainContent}>
+            {/* Upcoming ISMS Events — shown on the overview page only */}
+            {view === "overview" && <UpcomingEventsSection siteUrl={siteUrl} />}
+
             {view === "overview" ? (
               <OverviewPage
                 siteUrl={siteUrl}

@@ -12,6 +12,7 @@
   },
   "typescript.tsdk": ".\\node_modules\\typescript\\lib",
   "chat.tools.terminal.autoApprove": {
-    "npx gulp": true
+    "npx gulp": true,
+    "npm install": true
   }
 }
