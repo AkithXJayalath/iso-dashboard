@@ -7,15 +7,20 @@
 //      are namespaced and never clash with Fluent UI / SharePoint globals.
 //   2. StyleProvider injects antd's CSS-in-JS styles into a scoped container
 //      element (the iso-dashboard-scope div) rather than <head>.
+//
+// Navigation:
+//   - overview: Landing page showing all registries as scrollable sections.
+//   - detail: Full chart + overdue table view for one selected registry.
+//   State is kept in this component; no React Router or page reload required.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import * as React from "react";
-import { ConfigProvider, Divider, Typography } from "antd";
+import { Button, ConfigProvider, Typography } from "antd";
 import { StyleProvider, createCache } from "@ant-design/cssinjs";
-import { REGISTRIES, IRegistryConfig } from "../config/registryConfig";
-import RegistrySelector from "./RegistrySelector";
+import { REGISTRIES } from "../config/registryConfig";
 import ThresholdControl from "./ThresholdControl";
 import RegistryDashboardView from "./RegistryDashboardView";
+import OverviewPage from "./OverviewPage";
 import styles from "./ISODashboard.module.scss";
 
 const { Title } = Typography;
@@ -27,17 +32,31 @@ interface IISODashboardProps {
 // Stable cache instance — created once per web part load
 const styleCache = createCache();
 
+type TView = "overview" | "detail";
+
 const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
-  const [selectedRegistry, setSelectedRegistry] =
-    React.useState<IRegistryConfig>(REGISTRIES[0]);
+  const [view, setView] = React.useState<TView>("overview");
+  const [selectedRegistryId, setSelectedRegistryId] = React.useState<string>(
+    REGISTRIES[0].id,
+  );
   const [thresholdDays, setThresholdDays] = React.useState<number>(
     REGISTRIES[0].defaultThresholdDays,
   );
 
-  // When the user switches registries, reset threshold to that registry's default
-  const handleRegistryChange = (registry: IRegistryConfig): void => {
-    setSelectedRegistry(registry);
-    setThresholdDays(registry.defaultThresholdDays);
+  const selectedRegistry =
+    REGISTRIES.find((r) => r.id === selectedRegistryId) || REGISTRIES[0];
+
+  const handleViewDetails = (registryId: string): void => {
+    const reg = REGISTRIES.find((r) => r.id === registryId);
+    if (reg) {
+      setSelectedRegistryId(registryId);
+      setThresholdDays(reg.defaultThresholdDays);
+    }
+    setView("detail");
+  };
+
+  const handleBack = (): void => {
+    setView("overview");
   };
 
   return (
@@ -65,21 +84,27 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
         <div className={styles.isoDashboardScope}>
           {/* ── Top bar ──────────────────────────────────────────────────── */}
           <div className={styles.topBar}>
-            <Title
-              level={3}
-              style={{ margin: 0, color: "#0078d4", fontSize: 20 }}
-            >
-              ISO Registry Tracker
-            </Title>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              {view === "detail" && (
+                <Button
+                  prefixCls="iso-ant-btn"
+                  size="small"
+                  onClick={handleBack}
+                  style={{ fontSize: 12 }}
+                >
+                  ← Back
+                </Button>
+              )}
+              <Title
+                level={3}
+                style={{ margin: 0, color: "#0078d4", fontSize: 20 }}
+              >
+                {view === "overview"
+                  ? "ISO Registry Tracker"
+                  : selectedRegistry.label}
+              </Title>
+            </div>
             <div className={styles.controls}>
-              <RegistrySelector
-                selected={selectedRegistry}
-                onSelect={handleRegistryChange}
-              />
-              <Divider
-                type="vertical"
-                style={{ height: 28, margin: "0 12px" }}
-              />
               <ThresholdControl
                 value={thresholdDays}
                 onChange={setThresholdDays}
@@ -89,12 +114,20 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
 
           {/* ── Main content ─────────────────────────────────────────────── */}
           <div className={styles.mainContent}>
-            <RegistryDashboardView
-              key={selectedRegistry.id} // force remount on switch = clean state
-              registry={selectedRegistry}
-              thresholdDays={thresholdDays}
-              siteUrl={siteUrl}
-            />
+            {view === "overview" ? (
+              <OverviewPage
+                siteUrl={siteUrl}
+                thresholdDays={thresholdDays}
+                onViewDetails={handleViewDetails}
+              />
+            ) : (
+              <RegistryDashboardView
+                key={selectedRegistry.id} // force remount on registry switch = clean state
+                registry={selectedRegistry}
+                thresholdDays={thresholdDays}
+                siteUrl={siteUrl}
+              />
+            )}
           </div>
         </div>
       </ConfigProvider>

@@ -1,24 +1,16 @@
 // OverdueItemsPanel.tsx
-// Table of items that are:
-//   (a) not in a completedStatus, AND
-//   (b) age in days since dateField > threshold
+// Table of items flagged by either overdue type:
+//   Type A — Not completed past creation threshold
+//   Type B — Stalling in a non-completed status past per-status threshold
 
 import * as React from "react";
 import { Alert, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { IRegistryConfig } from "../config/registryConfig";
 import { IRegistryItem } from "../hooks/useRegistryData";
+import { getItemOverdueInfo, IStallingOverdue } from "../utils/overdueUtils";
 
 const { Text } = Typography;
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function daysSince(dateStr: string): number {
-  if (!dateStr) return 0;
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return 0;
-  const msPerDay = 1000 * 60 * 60 * 24;
-  return Math.floor((Date.now() - d.getTime()) / msPerDay);
-}
 
 // ── Component ─────────────────────────────────────────────────────────────────
 interface IOverdueItemsPanelProps {
@@ -32,7 +24,10 @@ interface ITableRow {
   id: number;
   title: string;
   status: string;
-  daysOverdue: number;
+  completionOverdue: boolean;
+  completionDaysOver: number;
+  stallingOverdue: IStallingOverdue | undefined;
+  maxDaysOver: number;
 }
 
 const OverdueItemsPanel: React.FC<IOverdueItemsPanelProps> = ({
@@ -41,17 +36,32 @@ const OverdueItemsPanel: React.FC<IOverdueItemsPanelProps> = ({
   thresholdDays,
 }) => {
   const overdueItems: ITableRow[] = React.useMemo(() => {
-    return items
-      .filter((item) => registry.completedStatuses.indexOf(item.status) === -1)
-      .map((item) => ({
+    const rows: ITableRow[] = [];
+    items.forEach((item) => {
+      const info = getItemOverdueInfo(item, registry, thresholdDays);
+      if (!info.isFlagged) return;
+
+      const completionDaysOver = info.completionOverdue
+        ? Math.max(0, info.completionDaysOver)
+        : 0;
+
+      const stallingDaysOver = info.stallingOverdue
+        ? info.stallingOverdue.daysOver
+        : 0;
+
+      rows.push({
         key: item.id,
         id: item.id,
         title: item.title,
         status: item.status,
-        daysOverdue: daysSince(item.date),
-      }))
-      .filter((row) => row.daysOverdue > thresholdDays)
-      .sort((a, b) => b.daysOverdue - a.daysOverdue);
+        completionOverdue: info.completionOverdue,
+        completionDaysOver,
+        stallingOverdue: info.stallingOverdue,
+        maxDaysOver: Math.max(completionDaysOver, stallingDaysOver),
+      });
+    });
+    rows.sort((a, b) => b.maxDaysOver - a.maxDaysOver);
+    return rows;
   }, [items, registry, thresholdDays]);
 
   const titleColumnHeader = registry.titleField || "Item";
@@ -76,14 +86,40 @@ const OverdueItemsPanel: React.FC<IOverdueItemsPanelProps> = ({
       ),
     },
     {
-      title: "Days overdue",
-      dataIndex: "daysOverdue",
-      key: "daysOverdue",
-      width: 120,
+      title: "Overdue type",
+      key: "overdueType",
+      width: 220,
+      render: (_: unknown, row: ITableRow) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          {row.completionOverdue && (
+            <Tag
+              color="error"
+              style={{ fontSize: 11, margin: 0, width: "fit-content" }}
+            >
+              Not completed +{row.completionDaysOver}d
+            </Tag>
+          )}
+          {row.stallingOverdue && (
+            <Tag
+              color="warning"
+              style={{ fontSize: 11, margin: 0, width: "fit-content" }}
+            >
+              Stalling in &ldquo;{row.stallingOverdue.status}&rdquo; +
+              {row.stallingOverdue.daysOver}d
+            </Tag>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: "Days over",
+      dataIndex: "maxDaysOver",
+      key: "maxDaysOver",
+      width: 100,
       align: "right" as const,
-      sorter: (a: ITableRow, b: ITableRow) => a.daysOverdue - b.daysOverdue,
+      sorter: (a: ITableRow, b: ITableRow) => a.maxDaysOver - b.maxDaysOver,
       render: (days: number) => {
-        const critical = days > thresholdDays * 2;
+        const critical = days > thresholdDays;
         return (
           <Text
             strong
@@ -107,10 +143,10 @@ const OverdueItemsPanel: React.FC<IOverdueItemsPanelProps> = ({
           message={
             <Text strong>
               {overdueItems.length} item
-              {overdueItems.length !== 1 ? "s are" : " is"} overdue
+              {overdueItems.length !== 1 ? "s are" : " is"} flagged as overdue
             </Text>
           }
-          description={`Items open longer than ${thresholdDays} days are listed below.`}
+          description="Items flagged by not-completed or status-stalling thresholds."
         />
       ) : (
         <Alert
@@ -133,7 +169,7 @@ const OverdueItemsPanel: React.FC<IOverdueItemsPanelProps> = ({
         size="small"
         pagination={{ pageSize: 10, size: "small", hideOnSinglePage: true }}
         locale={{ emptyText: "No overdue items." }}
-        scroll={{ x: 500 }}
+        scroll={{ x: 560 }}
         style={{ fontSize: 13 }}
       />
     </div>

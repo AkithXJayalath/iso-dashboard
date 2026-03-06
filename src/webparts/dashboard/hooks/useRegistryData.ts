@@ -20,7 +20,17 @@ export interface IRegistryItem {
   id: number;
   title: string;
   status: string;
-  date: string; // ISO date string from SharePoint
+  date: string; // ISO date string — creation / submission date
+  lastModified: string; // Modified field — used as stalling-start proxy
+  statusChangedDate: string; // StatusChangedDate field if present, else empty
+  /** Full raw SP REST response — allows overdueUtils to look up any mapped statusDateFields column by its internal name. */
+  rawFields: Record<string, unknown>;
+  /**
+   * statusDateFields with display names resolved to SP internal names.
+   * Built by the hook after the field map is fetched — same resolution
+   * path as statusField / dateField / titleField.
+   */
+  resolvedStatusDateFields: Record<string, string>;
 }
 
 export interface IRegistryDataState {
@@ -83,16 +93,26 @@ function normalise(
   statusKey: string,
   dateKey: string,
   titleKey: string | undefined,
+  statusChangedKey: string | undefined,
+  resolvedStatusDateFields: Record<string, string>,
 ): IRegistryItem {
   const itemId = (raw.Id as number) || (raw.ID as number);
 
   return {
     id: itemId,
-    title: titleKey
-      ? (raw[titleKey] as string) || `#${itemId}`
-      : `#${itemId}`,
+    title: titleKey ? (raw[titleKey] as string) || `#${itemId}` : `#${itemId}`,
     status: (raw[statusKey] as string) || "",
     date: (raw[dateKey] as string) || "",
+    lastModified: (raw.Modified as string) || "",
+    // StatusChangedDate is optional — empty string if the column doesn't exist
+    statusChangedDate: statusChangedKey
+      ? (raw[statusChangedKey] as string) || ""
+      : "",
+    // Full raw SP response preserved so overdueUtils can look up any
+    // statusDateFields-mapped column by its internal name at runtime.
+    rawFields: raw,
+    // Display names in statusDateFields already resolved to internal names.
+    resolvedStatusDateFields,
   };
 }
 
@@ -147,10 +167,37 @@ export function useRegistryData(
           ? resolveField(map, registry.titleField)
           : undefined;
 
-        const selectFields = ["Id", statusKey, dateKey];
+        // StatusChangedDate is a custom column — only include if it exists in the field map
+        const statusChangedKey = map.StatusChangedDate
+          ? "StatusChangedDate"
+          : undefined;
+
+        // Resolve statusDateFields display names → internal names using the
+        // same field map as all other display-name config fields.
+        const resolvedStatusDateFields: Record<string, string> = {};
+        Object.entries(registry.statusDateFields || {}).forEach(
+          ([status, displayName]) => {
+            resolvedStatusDateFields[status] = resolveField(map, displayName);
+          },
+        );
+
+        // Collect all resolved internal column names so every mapped
+        // stall-start date column is included in the REST $select query.
+        const statusDateColumns = Object.values(resolvedStatusDateFields);
+
+        const selectFields = ["Id", statusKey, dateKey, "Modified"];
         if (titleKey) {
           selectFields.push(titleKey);
         }
+        if (statusChangedKey) {
+          selectFields.push(statusChangedKey);
+        }
+        // Add statusDateFields columns (deduplicated; skip any already present)
+        statusDateColumns.forEach((col) => {
+          if (selectFields.indexOf(col) === -1) {
+            selectFields.push(col);
+          }
+        });
 
         const listUrl = `${siteUrl}/_api/web/lists/getbytitle('${encodeURIComponent(listName)}')/items`;
         const params = [`$select=${selectFields.join(",")}`, `$top=500`].join(
@@ -178,7 +225,14 @@ export function useRegistryData(
           })
           .then((data) => {
             const items = (data.value || []).map((raw) =>
-              normalise(raw, statusKey, dateKey, titleKey),
+              normalise(
+                raw,
+                statusKey,
+                dateKey,
+                titleKey,
+                statusChangedKey,
+                resolvedStatusDateFields,
+              ),
             );
             itemCache[registry.id] = items;
             setState({ items, loading: false, error: undefined });
