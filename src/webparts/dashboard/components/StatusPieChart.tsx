@@ -1,7 +1,3 @@
-// StatusPieChart.tsx
-// Doughnut/pie chart – distribution of items by current status.
-// Completed statuses use green tones; in-progress amber; open/new red-blue.
-
 import * as React from "react";
 import {
   PieChart,
@@ -14,8 +10,8 @@ import {
 import { IRegistryConfig } from "../config/registryConfig";
 import { IRegistryItem } from "../hooks/useRegistryData";
 
-// ── Colour assignment ─────────────────────────────────────────────────────────
-const COMPLETED_PALETTE = ["#52c41a", "#73d13d", "#95de64", "#b7eb8f"];
+// Colour assignment
+const COMPLETED_PALETTE = ["#52c41a", "#741275", "#95de64", "#b7eb8f"];
 const ACTIVE_PALETTE = ["#faad14", "#ffc53d", "#ffd666"];
 const REJECTED_PALETTE = ["#cf1322", "#f5222d", "#ff4d4f", "#ff7875"];
 const OPEN_PALETTE = ["#1677ff", "#4096ff", "#69b1ff", "#91caff"];
@@ -42,7 +38,7 @@ function buildColourMap(registry: IRegistryConfig): Record<string, string> {
   return map;
 }
 
-// ── Custom label ──────────────────────────────────────────────────────────────
+// Custom label 
 interface ILabelProps {
   cx: number;
   cy: number;
@@ -83,13 +79,13 @@ function renderCustomLabel({
   );
 }
 
-// ── Pie data entry ────────────────────────────────────────────────────────────
+// Pie data entry
 interface IPieEntry {
   name: string;
   value: number;
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// Component
 interface IStatusPieChartProps {
   registry: IRegistryConfig;
   items: IRegistryItem[];
