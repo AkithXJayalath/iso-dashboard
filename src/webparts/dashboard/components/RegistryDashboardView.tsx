@@ -71,7 +71,7 @@ const RegistryDashboardView: React.FC<IRegistryDashboardViewProps> = ({
         <Col xs={24} lg={14}>
           <Card
             prefixCls="iso-ant-card"
-            title="Items Added Over Time (Weekly)"
+            title="Items Added Over Time"
             size="small"
             style={{ borderRadius: 8, boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}
             headStyle={{ fontSize: 13, fontWeight: 600 }}
