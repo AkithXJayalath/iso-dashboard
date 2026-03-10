@@ -1,20 +1,3 @@
-// UpcomingEventsSection.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// Section component that renders the "Upcoming ISMS Events" panel.
-//
-// Layout:
-//   ┌─────────────────────────────────────────────────────────────────┐
-//   │  Upcoming ISMS Events          [Overdue] [All Upcoming] [Month▼]│
-//   │  ─────────────────────────────────────────────────────────────  │
-//   │  [EventCard]  [EventCard]  [EventCard]  …                       │
-//   └─────────────────────────────────────────────────────────────────┘
-//
-// Filter modes:
-//   upcoming  (default) — all overdue + items due within the config window
-//   overdue             — only overdue items
-//   month               — items in the selected month (from month dropdown)
-// ─────────────────────────────────────────────────────────────────────────────
-
 import * as React from "react";
 import {
   Alert,

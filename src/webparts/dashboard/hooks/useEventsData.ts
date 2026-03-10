@@ -1,24 +1,10 @@
-// useEventsData.ts
-// ─────────────────────────────────────────────────────────────────────────────
-// React hook that:
-//   1. Fetches the ISMS calendar Excel file from SharePoint via REST API.
-//   2. Parses it with SheetJS, forward-filling the sparse Month column.
-//   3. Exposes `markAsCompleted` which writes back actualDate + evidence
-//      by re-downloading the latest file, patching the row, and re-uploading.
-//
-// Uses same-origin SharePoint REST (/_api/web/GetFileById) — no Graph
-// permissions or admin consent required.
-// ─────────────────────────────────────────────────────────────────────────────
-
 import * as React from "react";
 import * as XLSX from "xlsx";
 import { EVENTS_CONFIG } from "../config/eventsConfig";
 import { ICalendarEvent, parseExcelDate } from "../utils/eventUtils";
 
 export interface IUseEventsDataResult {
-  /** Filtered upcoming + overdue events (ready to display). */
   events: ICalendarEvent[];
-  /** All non-completed events from the sheet (unfiltered). */
   allEvents: ICalendarEvent[];
   loading: boolean;
   error: string | null;
@@ -44,14 +30,6 @@ export interface IUseEventsDataResult {
   refresh: () => void;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Internal helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Downloads the Excel file as an ArrayBuffer via SharePoint REST API.
- * Uses same-origin credentials — no Graph permissions required.
- */
 async function downloadFile(siteUrl: string): Promise<ArrayBuffer> {
   const url = `${siteUrl}/_api/web/GetFileById('${EVENTS_CONFIG.fileUniqueId}')/$value`;
   const res = await fetch(url, {
@@ -104,7 +82,7 @@ function parseWorkbook(buffer: ArrayBuffer): ICalendarEvent[] {
   const rows: unknown[][] = XLSX.utils.sheet_to_json(sheet, {
     header: 1,
     defval: "",
-    raw: false, // return formatted strings for date cells (we parse ourselves)
+    raw: false, // return formatted strings for date cells
   });
 
   // Re-read with raw:true to get actual Date / number values for date cells
@@ -172,9 +150,6 @@ async function uploadFile(
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Hook
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function useEventsData(siteUrl: string): IUseEventsDataResult {
   const [allEvents, setAllEvents] = React.useState<ICalendarEvent[]>([]);
