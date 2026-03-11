@@ -40,18 +40,36 @@ export function toMidnight(d: Date): Date {
  */
 export function parseExcelDate(val: unknown): Date | null {
   if (val == null || val === "") return null;
-  if (val instanceof Date) return isNaN(val.getTime()) ? null : val;
+
+  if (val instanceof Date) {
+    if (isNaN(val.getTime())) return null;
+    // SheetJS builds Date objects at UTC midnight. In UTC+ timezones
+    // getDate() still gives the correct day (UTC midnight = same-day morning local).
+    // Use local components so toLocaleDateString always shows the right day.
+    return new Date(val.getFullYear(), val.getMonth(), val.getDate());
+  }
+
   if (typeof val === "number" && val > 0) {
-    // Excel serial date: days since 1899-12-31 (with 1900 leap-year bug)
-    const msPerDay = 86400000;
-    const excelEpoch = new Date(1899, 11, 31).getTime();
-    const date = new Date(excelEpoch + val * msPerDay);
-    return isNaN(date.getTime()) ? null : date;
+    // Excel serial = days since 1899-12-30 (accounts for Excel's fake 1900 leap day).
+    // Compute via UTC to get the exact calendar date, then build local midnight.
+    const tmp = new Date(Date.UTC(1899, 11, 30) + val * 86400000);
+    return new Date(tmp.getUTCFullYear(), tmp.getUTCMonth(), tmp.getUTCDate());
   }
+
   if (typeof val === "string" && val.trim() !== "") {
-    const d = new Date(val.trim());
-    return isNaN(d.getTime()) ? null : d;
+    // Non-ISO strings (e.g. "24-Mar-26") are parsed by browsers as local time,
+    // so use local date components. ISO strings (YYYY-MM-DD) are UTC — handle both
+    // by checking: if the string looks like ISO date, extract UTC components;
+    // otherwise use local components.
+    const s = val.trim();
+    const d = new Date(s);
+    if (isNaN(d.getTime())) return null;
+    const isIso = /^\d{4}-\d{2}-\d{2}/.test(s);
+    return isIso
+      ? new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
+      : new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
+
   return null;
 }
 

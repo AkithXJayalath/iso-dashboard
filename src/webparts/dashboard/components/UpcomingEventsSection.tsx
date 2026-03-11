@@ -1,20 +1,3 @@
-// UpcomingEventsSection.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// Section component that renders the "Upcoming ISMS Events" panel.
-//
-// Layout:
-//   ┌─────────────────────────────────────────────────────────────────┐
-//   │  Upcoming ISMS Events          [Overdue] [All Upcoming] [Month▼]│
-//   │  ─────────────────────────────────────────────────────────────  │
-//   │  [EventCard]  [EventCard]  [EventCard]  …                       │
-//   └─────────────────────────────────────────────────────────────────┘
-//
-// Filter modes:
-//   upcoming  (default) — all overdue + items due within the config window
-//   overdue             — only overdue items
-//   month               — items in the selected month (from month dropdown)
-// ─────────────────────────────────────────────────────────────────────────────
-
 import * as React from "react";
 import {
   Alert,
@@ -128,13 +111,13 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
     setSaveError(null);
     try {
       await markAsCompleted(event, actualDate, evidence);
-      setCompletingEvent(null);
+      setCompletingEvent(null); // close only on success
     } catch (err: unknown) {
       const msg =
         err instanceof Error
           ? err.message
           : "Failed to save completion. Please try again.";
-      setSaveError(msg);
+      setSaveError(msg); // modal stays open; error shown inside it
     } finally {
       setSaving(false);
     }
@@ -148,13 +131,13 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
     setSaveError(null);
     try {
       await markAsPlanned(event, plannedDate);
-      setPlanningEvent(null);
+      setPlanningEvent(null); // close only on success
     } catch (err: unknown) {
       const msg =
         err instanceof Error
           ? err.message
           : "Failed to save planned date. Please try again.";
-      setSaveError(msg);
+      setSaveError(msg); // modal stays open; error shown inside it
     } finally {
       setSaving(false);
     }
@@ -251,16 +234,7 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
         </Space>
       </div>
 
-      {/* ── Save error banner ── */}
-      {saveError && (
-        <Alert
-          type="error"
-          message={saveError}
-          closable
-          onClose={() => setSaveError(null)}
-          style={{ marginBottom: 10 }}
-        />
-      )}
+      {/* ── Save error banner removed — error now shown inside the modal ── */}
 
       {/* ── Content ── */}
       {loading ? (
@@ -343,6 +317,7 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
       <CompletionModal
         event={completingEvent}
         mode="complete"
+        saveError={saveError}
         onSubmit={handleSubmit}
         onPlan={() => Promise.resolve()}
         onCancel={handleModalCancel}
@@ -352,6 +327,7 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
       <CompletionModal
         event={planningEvent}
         mode="plan"
+        saveError={saveError}
         onSubmit={() => Promise.resolve()}
         onPlan={handlePlanSubmit}
         onCancel={handleModalCancel}
