@@ -43,9 +43,6 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
   const [saveError, setSaveError] = React.useState<string | null>(null);
   const [saving, setSaving] = React.useState(false);
 
-  // ── Exclude already-executed events (by status) before any filter ───────
-  // actualDate may be null even for executed rows, so check status directly.
-  // Use case-insensitive comparison to guard against casing variants in Excel.
   const activeEvents = React.useMemo(
     () =>
       events.filter(
@@ -55,7 +52,7 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
     [events],
   );
 
-  // ── Derive available month options from data ────────────────────────────
+  //  Derive available month options from data 
   const monthOptions = React.useMemo(() => {
     const months = new Set<string>();
     activeEvents.forEach((e) => {
@@ -64,7 +61,7 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
     return Array.from(months).map((m) => ({ label: m, value: m }));
   }, [activeEvents]);
 
-  // ── Apply selected filter ───────────────────────────────────────────────
+  //  Apply selected filter 
   const displayedEvents = React.useMemo((): ICalendarEvent[] => {
     let filtered: ICalendarEvent[];
     if (filterMode === "overdue") {
@@ -80,13 +77,13 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
     return sortEvents(filtered);
   }, [activeEvents, filterMode, selectedMonth]);
 
-  // ── Summary counts ──────────────────────────────────────────────────────
+  //  Summary counts 
   const overdueCount = React.useMemo(
     () => filterOverdue(activeEvents).length,
     [activeEvents],
   );
 
-  // ── Handlers ────────────────────────────────────────────────────────────
+  //  Handlers 
   const handleFilterChange = (mode: TFilterMode): void => {
     setFilterMode(mode);
     if (mode !== "month") setSelectedMonth("");
@@ -149,11 +146,11 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
     setSaveError(null);
   };
 
-  // ── Render ───────────────────────────────────────────────────────────────
+  //  Render 
 
   return (
     <div style={{ marginBottom: 28 }}>
-      {/* ── Section header ── */}
+      {/*  Section header  */}
       <div
         style={{
           display: "flex",
@@ -187,7 +184,7 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
           )}
         </div>
 
-        {/* ── Filter bar ── */}
+        {/*  Filter bar  */}
         <Space size={6} wrap>
           <Button
             prefixCls="iso-ant-btn"
@@ -234,9 +231,9 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
         </Space>
       </div>
 
-      {/* ── Save error banner removed — error now shown inside the modal ── */}
+      {/*  Save error banner removed — error now shown inside the modal  */}
 
-      {/* ── Content ── */}
+      {/*  Content  */}
       {loading ? (
         <div
           style={{
@@ -313,7 +310,7 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
         </div>
       )}
 
-      {/* ── Completion modal ── */}
+      {/*  Completion modal  */}
       <CompletionModal
         event={completingEvent}
         mode="complete"
@@ -323,7 +320,7 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
         onCancel={handleModalCancel}
       />
 
-      {/* ── Plan modal ── */}
+      {/*  Plan modal  */}
       <CompletionModal
         event={planningEvent}
         mode="plan"

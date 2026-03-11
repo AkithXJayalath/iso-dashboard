@@ -34,15 +34,11 @@ function parseFindingText(text: string): ITextSection[] {
   if (!text) return [];
 
   const parts = text.split(FINDING_SECTION_RE);
-  // parts: [leading?, label, content, label, content, ...]
   const sections: ITextSection[] = [];
-
-  // If none of the keywords appear, return the whole text as a single block
   if (parts.length <= 1) {
     return [{ label: "", content: text.trim() }];
   }
 
-  // The first part (index 0) is any text before the first keyword — ignore if blank
   let i = 1;
   while (i < parts.length - 1) {
     const label = parts[i].trim();
@@ -54,7 +50,7 @@ function parseFindingText(text: string): ITextSection[] {
   return sections.length > 0 ? sections : [{ label: "", content: text.trim() }];
 }
 
-// ── Small detail label + value row (defined before FindingCard) ─────────────
+
 
 const DetailRow: React.FC<{
   label: string;
@@ -120,7 +116,7 @@ const FindingCard: React.FC<IFindingCardProps> = ({ item, source }) => {
         gap: 10,
       }}
     >
-      {/* ── Header row ── */}
+      {/* Header row */}
       <div
         style={{
           display: "flex",
@@ -196,7 +192,7 @@ const FindingCard: React.FC<IFindingCardProps> = ({ item, source }) => {
         )}
       </div>
 
-      {/* ── Finding text ── */}
+      {/* Finding text*/}
       {hasField("finding") && findingSections.length > 0 && (
         <div>
           {findingSections.length === 1 && !findingSections[0].label ? (
@@ -298,7 +294,7 @@ const FindingCard: React.FC<IFindingCardProps> = ({ item, source }) => {
         </div>
       )}
 
-      {/* ── Collapsible details ── */}
+      {/* Collapsible details */}
       {hasDetails && (
         <div>
           <Button
@@ -368,7 +364,7 @@ const FindingCard: React.FC<IFindingCardProps> = ({ item, source }) => {
   );
 };
 
-// ── FindingsSection (exported) ───────────────────────────────────────────────
+
 
 interface IFindingsSectionProps {
   siteUrl: string;
@@ -383,7 +379,7 @@ const FindingsSection: React.FC<IFindingsSectionProps> = ({
 
   return (
     <div style={{ marginBottom: 28 }}>
-      {/* ── Section header ── */}
+      {/* Section header */}
       <div
         style={{
           display: "flex",
@@ -434,7 +430,7 @@ const FindingsSection: React.FC<IFindingsSectionProps> = ({
         </div>
       </div>
 
-      {/* ── Content ── */}
+      {/* Content */}
       {loading ? (
         <div
           style={{

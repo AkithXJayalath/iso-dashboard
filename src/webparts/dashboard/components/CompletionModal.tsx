@@ -7,21 +7,15 @@ const { TextArea } = Input;
 const { Text } = Typography;
 
 interface ICompletionModalProps {
-  /** The event being acted on, or null when the modal is hidden. */
   event: ICalendarEvent | null;
-  /** "complete" shows actual date + evidence; "plan" shows planned date only. */
   mode: "complete" | "plan";
-  /** Save error to display inside the modal. */
   saveError?: string | null;
-  /** Called in complete mode. */
   onSubmit: (
     event: ICalendarEvent,
     actualDate: Date,
     evidence: string,
   ) => Promise<void>;
-  /** Called in plan mode. */
   onPlan: (event: ICalendarEvent, plannedDate: Date) => Promise<void>;
-  /** Called when the user cancels or closes the modal. */
   onCancel: () => void;
 }
 
@@ -81,6 +75,15 @@ const CompletionModal: React.FC<ICompletionModalProps> = ({
   };
 
   const isPlanMode = mode === "plan";
+
+  const planMonthRange = React.useMemo(() => {
+    if (!event || !isPlanMode) return undefined;
+    const base = event.plannedDate
+      ? dayjs(event.plannedDate)
+      : dayjs(`${event.month} 2026`, "MMMM YYYY");
+    if (!base.isValid()) return undefined;
+    return { start: base.startOf("month"), end: base.endOf("month") };
+  }, [event, isPlanMode]);
 
   return (
     <Modal
@@ -151,7 +154,18 @@ const CompletionModal: React.FC<ICompletionModalProps> = ({
                 style={{ width: "100%" }}
                 format="DD/MM/YYYY"
                 disabledDate={
-                  isPlanMode ? undefined : (d) => d && d.isAfter(dayjs(), "day")
+                  isPlanMode
+                    ? (d) =>
+                        planMonthRange
+                          ? d.isBefore(planMonthRange.start, "day") ||
+                            d.isAfter(planMonthRange.end, "day")
+                          : false
+                    : (d) => d && d.isAfter(dayjs(), "day")
+                }
+                defaultPickerValue={
+                  isPlanMode && planMonthRange
+                    ? planMonthRange.start
+                    : undefined
                 }
                 placeholder={
                   isPlanMode ? "Select planned date" : "Select actual date"

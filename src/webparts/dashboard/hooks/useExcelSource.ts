@@ -1,23 +1,12 @@
 // useExcelSource.ts
-// ─────────────────────────────────────────────────────────────────────────────
 // Generic read-only hook for fetching and parsing any Excel findings sheet
 // from SharePoint.
-//
-// Pattern mirrors useEventsData:
-//   - Downloads via /_api/web/GetFileById with same-origin credentials
-//   - Parses with SheetJS (xlsx)
-//   - Normalises columns from source.columns config
-//   - Filters rows by source.filterStatus
-//
-// Usage:
-//   const { rows, loading, error, refresh } = useExcelSource(siteUrl, source);
-// ─────────────────────────────────────────────────────────────────────────────
 
 import * as React from "react";
 import * as XLSX from "xlsx";
 import { IExcelFindingsSource } from "../config/excelSourcesConfig";
 
-// ── Normalised finding row returned to consumers ─────────────────────────────
+//  Normalised finding row returned to consumers
 
 export interface IFindingItem {
   /** 1-based Excel row number (after header) */
@@ -44,8 +33,6 @@ export interface IUseExcelSourceResult {
   refresh: () => void;
 }
 
-// ── SharePoint download (same pattern as useEventsData) ──────────────────────
-
 async function downloadFile(
   siteUrl: string,
   fileUniqueId: string,
@@ -61,7 +48,6 @@ async function downloadFile(
   return res.arrayBuffer();
 }
 
-// ── Cell accessor — returns null for absent/empty cells ─────────────────────
 
 function getCell(
   row: unknown[],
@@ -73,7 +59,6 @@ function getCell(
   return String(val).trim() || undefined;
 }
 
-// ── Parse workbook and return filtered findings ──────────────────────────────
 
 function parseSheet(
   buffer: ArrayBuffer,
@@ -131,7 +116,7 @@ function parseSheet(
   return results;
 }
 
-// ── Hook ──────────────────────────────────────────────────────────────────────
+//  Hook 
 
 export function useExcelSource(
   siteUrl: string,

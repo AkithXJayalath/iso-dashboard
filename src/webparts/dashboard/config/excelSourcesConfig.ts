@@ -1,12 +1,9 @@
 
 export interface IFindingsColumns {
-  /** Row number / finding ID — omit or leave undefined if absent in this sheet */
+  /** Row number / finding ID — omit or leave undefined if absent in the sheet */
   number?: number;
-  /** Full finding text (Requirement + Observation + Evidence) */
   finding?: number;
-  /** ISO 27001:2022 clause reference */
   clause?: number;
-  /** Category: Observation / Minor Non Conformity / Major Non Conformity */
   category?: number;
   processArea?: number;
   auditee?: number;
@@ -14,37 +11,28 @@ export interface IFindingsColumns {
   causeAnalysis?: number;
   immediateAction?: number;
   correctiveAction?: number;
-  /** Planned implementation date */
   plannedDate?: number;
-  /** Status column — used for filtering */
   status?: number;
   followUpComments?: number;
 }
 
 export interface IExcelFindingsSource {
-  /** Unique identifier — used as React key and hook dependency */
+  
   id: string;
-  /** Display label shown as the section heading */
+  
   label: string;
-  /**
-   * SharePoint file unique ID (GUID).
-   * Obtain from:  /_api/web/GetFileByServerRelativePath(decodedurl='...')/UniqueId
-   */
   fileUniqueId: string;
-  /** Exact sheet name as it appears in the workbook */
   sheetName: string;
   type: "findings";
-  /** Only rows whose status column equals this value are shown */
   filterStatus: string;
-  /** Number of header rows to skip (almost always 1) */
   headerRows: number;
   columns: IFindingsColumns;
 }
 
-// ── Sources ────────────────────────────────────────────────────────────────
+//  Sources 
 
 export const EXCEL_FINDINGS_SOURCES: IExcelFindingsSource[] = [
-  // ── Internal Audit Findings ─────────────────────────────────────────────
+  //  Internal Audit Findings 
   {
     id: "internal-audit-findings",
     label: "2026 Internal Audit Findings",

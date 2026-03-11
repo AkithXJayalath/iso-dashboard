@@ -1,19 +1,3 @@
-// ISODashboard.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// Main shell for the ISO Registry Tracker Dashboard.
-//
-// Style isolation strategy for SharePoint:
-//   1. ConfigProvider with prefixCls="iso-ant" so antd component CSS classes
-//      are namespaced and never clash with Fluent UI / SharePoint globals.
-//   2. StyleProvider injects antd's CSS-in-JS styles into a scoped container
-//      element (the iso-dashboard-scope div) rather than <head>.
-//
-// Navigation:
-//   - overview: Landing page showing all registries as scrollable sections.
-//   - detail: Full chart + overdue table view for one selected registry.
-//   State is kept in this component; no React Router or page reload required.
-// ─────────────────────────────────────────────────────────────────────────────
-
 import * as React from "react";
 import { Button, ConfigProvider, Typography } from "antd";
 import { StyleProvider, createCache } from "@ant-design/cssinjs";
@@ -70,7 +54,7 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
         prefixCls="iso-ant"
         theme={{
           token: {
-            colorPrimary: "#0078d4", // SharePoint blue
+            colorPrimary: "#0078d4", 
             colorBgBase: "#ffffff",
             colorTextBase: "#323130",
             borderRadius: 6,
@@ -85,7 +69,7 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
         }}
       >
         <div className={styles.isoDashboardScope}>
-          {/* ── Top bar ──────────────────────────────────────────────────── */}
+          {/*  Top bar  */}
           <div className={styles.topBar}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               {view === "detail" && (
@@ -115,7 +99,7 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
             </div>
           </div>
 
-          {/* ── Main content ─────────────────────────────────────────────── */}
+          {/*  Main content  */}
           <div className={styles.mainContent}>
             {/* Upcoming ISMS Events — shown on the overview page only */}
             {view === "overview" && <UpcomingEventsSection siteUrl={siteUrl} />}

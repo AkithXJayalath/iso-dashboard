@@ -85,7 +85,6 @@ function urgencyLabel(event: ICalendarEvent): string {
   return `${remaining} days remaining`;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 
 const EventCard: React.FC<IEventCardProps> = ({
   event,
@@ -110,7 +109,7 @@ const EventCard: React.FC<IEventCardProps> = ({
       }}
       bodyStyle={{ padding: "10px 14px" }}
     >
-      {/* ── Header row ── */}
+      {/* Header row */}
       <div
         style={{
           display: "flex",
@@ -139,7 +138,7 @@ const EventCard: React.FC<IEventCardProps> = ({
         </Tag>
       </div>
 
-      {/* ── Meta row ── */}
+      {/* Meta row */}
       <div
         style={{
           display: "flex",
@@ -171,7 +170,7 @@ const EventCard: React.FC<IEventCardProps> = ({
         )}
       </div>
 
-      {/* ── Actual date (if completed) ── */}
+      {/* Actual date (if completed) */}
       {isComplete && (
         <Text
           type="secondary"
@@ -191,7 +190,7 @@ const EventCard: React.FC<IEventCardProps> = ({
         </Text>
       )}
 
-      {/* ── Action button (only for incomplete events) ── */}
+      {/* Action button (only for incomplete events)*/}
       {!isComplete && (
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           {needsPlan ? (
