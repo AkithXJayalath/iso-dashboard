@@ -1,4 +1,3 @@
-// RegistrySectionCard.tsx
 // Full-width card shown on the Overview landing page for one registry.
 // Fetches its own data, renders a StatusPieChart + OverdueSummaryCard side-by-side,
 // and provides a "View Details" button to navigate to the full detail view.

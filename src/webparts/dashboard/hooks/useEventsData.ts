@@ -51,7 +51,7 @@ function parseWorkbook(buffer: ArrayBuffer): ICalendarEvent[] {
   const cfg = EVENTS_CONFIG;
   const workbook = XLSX.read(new Uint8Array(buffer), {
     type: "array",
-    cellDates: true,
+    cellDates: false,
     cellNF: false,
     cellText: false,
   });
@@ -352,6 +352,11 @@ async function patchAndUpload(
     body: new Blob([zipped]),
   });
   if (!res.ok) {
+    if (res.status === 423) {
+      throw new Error(
+        `The source Excel file currently locked as it is open somewhere. Close it and try again.`,
+      );
+    }
     throw new Error(`Upload failed: HTTP ${res.status} ${res.statusText}`);
   }
 }

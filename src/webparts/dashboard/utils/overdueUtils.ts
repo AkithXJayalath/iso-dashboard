@@ -26,7 +26,7 @@
 import { IRegistryConfig } from "../config/registryConfig";
 import { IRegistryItem } from "../hooks/useRegistryData";
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+//  Helpers 
 export function daysBetween(dateStr: string): number {
   if (!dateStr) return 0;
   const d = new Date(dateStr);
@@ -49,7 +49,7 @@ function isCompleted(status: string, registry: IRegistryConfig): boolean {
   return registry.completedStatuses.indexOf(status) !== -1;
 }
 
-// ── Type A — Completion Overdue ───────────────────────────────────────────────
+//  Type A — Completion Overdue 
 export function isCompletionOverdue(
   item: IRegistryItem,
   registry: IRegistryConfig,
@@ -59,28 +59,22 @@ export function isCompletionOverdue(
   return daysBetween(item.date) > userThreshold;
 }
 
-// ── Type B — Status Stalling Overdue ─────────────────────────────────────────
+//  Type B — Status Stalling Overdue 
 export interface IStallingOverdue {
   type: "STALLING";
   status: string;
   daysStalling: number;
   daysOver: number;
   threshold: number;
-  /** Which field/fallback was actually used to measure stalling start. */
   resolvedDateField: string;
 }
 
-/**
- * Resolves the date from which stalling time is measured for the item's
- * current status, using the 4-level priority chain documented at the top
- * of this file.
- */
+
 function resolveStallStartDate(
   item: IRegistryItem,
   _registry: IRegistryConfig,
 ): { dateStr: string; resolvedDateField: string } {
-  // 1. statusDateFields mapped column — display names already resolved to
-  //    internal names by the hook, so look directly in rawFields.
+  // 1. statusDateFields mapped column  display names already resolved to
   const mappedFieldName = item.resolvedStatusDateFields[item.status];
   if (mappedFieldName) {
     const mappedDate = item.rawFields[mappedFieldName] as string | undefined;
@@ -113,7 +107,7 @@ export function getStallingOverdue(
 ): IStallingOverdue | undefined {
   if (isCompleted(item.status, registry)) return undefined;
 
-  // Per-status threshold → userThreshold
+  // Per-status threshold -> userThreshold
   const thresholds = registry.statusThresholds;
   const threshold =
     thresholds && thresholds[item.status] !== undefined
@@ -139,7 +133,6 @@ export function getStallingOverdue(
   return undefined;
 }
 
-// ── Combined result ───────────────────────────────────────────────────────────
 export interface IItemOverdueInfo {
   completionOverdue: boolean;
   completionDaysOver: number;
@@ -166,7 +159,7 @@ export function getItemOverdueInfo(
   };
 }
 
-// ── Overview summary — used by OverdueSummaryCard ────────────────────────────
+//  Overview summary — used by OverdueSummaryCard 
 export interface IOverdueSummary {
   completionOverdueCount: number;
   stallingByStatus: Array<{ status: string; count: number; threshold: number }>;

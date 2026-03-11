@@ -39,13 +39,13 @@ export interface IRegistryDataState {
   error: string | undefined;
 }
 
-// ── Caches ────────────────────────────────────────────────────────────────────
+//  Caches 
 // Item cache keyed by registry id
 const itemCache: Record<string, IRegistryItem[]> = {};
 // Field map cache keyed by SP list name: displayName → internalName
 const fieldMapCache: Record<string, Record<string, string>> = {};
 
-// ── Fetch the field metadata for a list and return displayName → internalName
+// Fetch the field metadata for a list and return displayName → internalName
 async function fetchFieldMap(
   siteUrl: string,
   listName: string,
@@ -79,7 +79,7 @@ async function fetchFieldMap(
   return map;
 }
 
-// ── Resolve a display name to its internal name; fall back to the name as-is
+//  Resolve a display name to its internal name; fall back to the name as-is
 function resolveField(
   map: Record<string, string>,
   displayName: string,
@@ -87,7 +87,7 @@ function resolveField(
   return map[displayName] !== undefined ? map[displayName] : displayName;
 }
 
-// ── Map a raw SP item to a normalised IRegistryItem ─────────────────────────
+//  Map a raw SP item to a normalised IRegistryItem 
 function normalise(
   raw: Record<string, unknown>,
   statusKey: string,
@@ -116,7 +116,7 @@ function normalise(
   };
 }
 
-// ── Hook ──────────────────────────────────────────────────────────────────────
+//  Hook 
 export function useRegistryData(
   registry: IRegistryConfig,
   siteUrl: string,

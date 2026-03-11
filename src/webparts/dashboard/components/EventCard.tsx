@@ -28,6 +28,12 @@ const COLORS = {
     tagColor: "warning",
     dotColor: "#fa8c16",
   },
+  toBePlanned: {
+    border: "#722ed1",
+    bg: "#f9f0ff",
+    tagColor: "purple",
+    dotColor: "#722ed1",
+  },
   upcoming: {
     border: "#52c41a",
     bg: "#f6ffed",
@@ -58,7 +64,7 @@ function isExecuted(event: ICalendarEvent): boolean {
 
 function getColorKey(event: ICalendarEvent): TColorKey {
   if (event.actualDate !== null || isExecuted(event)) return "complete";
-  if (isToBePlanned(event)) return "dueSoon"; // orange until a planned date is set
+  if (isToBePlanned(event)) return "toBePlanned";
   const { isOverdue, daysOffset } = getEventStatus(event);
   if (isOverdue) return "overdue";
   if (daysOffset >= -7) return "dueSoon"; // within 7 days remaining
@@ -79,7 +85,6 @@ function urgencyLabel(event: ICalendarEvent): string {
   return `${remaining} days remaining`;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 
 const EventCard: React.FC<IEventCardProps> = ({
   event,
@@ -104,7 +109,7 @@ const EventCard: React.FC<IEventCardProps> = ({
       }}
       bodyStyle={{ padding: "10px 14px" }}
     >
-      {/* ── Header row ── */}
+      {/* Header row */}
       <div
         style={{
           display: "flex",
@@ -133,7 +138,7 @@ const EventCard: React.FC<IEventCardProps> = ({
         </Tag>
       </div>
 
-      {/* ── Meta row ── */}
+      {/* Meta row */}
       <div
         style={{
           display: "flex",
@@ -165,7 +170,7 @@ const EventCard: React.FC<IEventCardProps> = ({
         )}
       </div>
 
-      {/* ── Actual date (if completed) ── */}
+      {/* Actual date (if completed) */}
       {isComplete && (
         <Text
           type="secondary"
@@ -185,7 +190,7 @@ const EventCard: React.FC<IEventCardProps> = ({
         </Text>
       )}
 
-      {/* ── Action button (only for incomplete events) ── */}
+      {/* Action button (only for incomplete events)*/}
       {!isComplete && (
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           {needsPlan ? (
@@ -196,8 +201,8 @@ const EventCard: React.FC<IEventCardProps> = ({
               onClick={() => onPlan(event)}
               style={{
                 fontSize: 12,
-                background: COLORS.dueSoon.border,
-                borderColor: COLORS.dueSoon.border,
+                background: COLORS.toBePlanned.border,
+                borderColor: COLORS.toBePlanned.border,
               }}
             >
               Plan
