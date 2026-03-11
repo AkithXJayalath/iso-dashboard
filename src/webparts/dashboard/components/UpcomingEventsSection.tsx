@@ -36,11 +36,15 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
 
   const [filterMode, setFilterMode] = React.useState<TFilterMode>("upcoming");
   const [selectedMonth, setSelectedMonth] = React.useState<string>("");
-  const [completingEvent, setCompletingEvent] =
-    React.useState<ICalendarEvent | null>(null);
-  const [planningEvent, setPlanningEvent] =
-    React.useState<ICalendarEvent | null>(null);
-  const [saveError, setSaveError] = React.useState<string | null>(null);
+  const [completingEvent, setCompletingEvent] = React.useState<
+    ICalendarEvent | undefined
+  >(undefined);
+  const [planningEvent, setPlanningEvent] = React.useState<
+    ICalendarEvent | undefined
+  >(undefined);
+  const [saveError, setSaveError] = React.useState<string | undefined>(
+    undefined,
+  );
   const [saving, setSaving] = React.useState(false);
 
   const activeEvents = React.useMemo(
@@ -68,7 +72,7 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
       filtered = filterOverdue(activeEvents);
     } else if (filterMode === "month" && selectedMonth) {
       filtered = activeEvents.filter(
-        (e) => e.month === selectedMonth && e.actualDate == null,
+        (e) => e.month === selectedMonth && e.actualDate === undefined,
       );
     } else {
       // "upcoming" — default: all overdue + within window
@@ -90,12 +94,12 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
   };
 
   const handleMarkCompleted = (event: ICalendarEvent): void => {
-    setSaveError(null);
+    setSaveError(undefined);
     setCompletingEvent(event);
   };
 
   const handlePlan = (event: ICalendarEvent): void => {
-    setSaveError(null);
+    setSaveError(undefined);
     setPlanningEvent(event);
   };
 
@@ -105,10 +109,10 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
     evidence: string,
   ): Promise<void> => {
     setSaving(true);
-    setSaveError(null);
+    setSaveError(undefined);
     try {
       await markAsCompleted(event, actualDate, evidence);
-      setCompletingEvent(null); // close only on success
+      setCompletingEvent(undefined); // close only on success
     } catch (err: unknown) {
       const msg =
         err instanceof Error
@@ -125,10 +129,10 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
     plannedDate: Date,
   ): Promise<void> => {
     setSaving(true);
-    setSaveError(null);
+    setSaveError(undefined);
     try {
       await markAsPlanned(event, plannedDate);
-      setPlanningEvent(null); // close only on success
+      setPlanningEvent(undefined); // close only on success
     } catch (err: unknown) {
       const msg =
         err instanceof Error
@@ -141,9 +145,9 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
   };
 
   const handleModalCancel = (): void => {
-    setCompletingEvent(null);
-    setPlanningEvent(null);
-    setSaveError(null);
+    setCompletingEvent(undefined);
+    setPlanningEvent(undefined);
+    setSaveError(undefined);
   };
 
   //  Render

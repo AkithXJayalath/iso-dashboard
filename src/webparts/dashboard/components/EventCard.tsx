@@ -63,7 +63,7 @@ function isExecuted(event: ICalendarEvent): boolean {
 }
 
 function getColorKey(event: ICalendarEvent): TColorKey {
-  if (event.actualDate !== null || isExecuted(event)) return "complete";
+  if (event.actualDate !== undefined || isExecuted(event)) return "complete";
   if (isToBePlanned(event)) return "toBePlanned";
   const { isOverdue, daysOffset } = getEventStatus(event);
   if (isOverdue) return "overdue";
@@ -72,7 +72,7 @@ function getColorKey(event: ICalendarEvent): TColorKey {
 }
 
 function urgencyLabel(event: ICalendarEvent): string {
-  if (event.actualDate !== null || isExecuted(event)) return "Completed";
+  if (event.actualDate !== undefined || isExecuted(event)) return "Completed";
   if (isToBePlanned(event)) return "To be Planned";
   const { isOverdue, daysOffset } = getEventStatus(event);
   if (!event.plannedDate) return "No date";
@@ -85,7 +85,6 @@ function urgencyLabel(event: ICalendarEvent): string {
   return `${remaining} days remaining`;
 }
 
-
 const EventCard: React.FC<IEventCardProps> = ({
   event,
   onMarkCompleted,
@@ -93,7 +92,7 @@ const EventCard: React.FC<IEventCardProps> = ({
 }) => {
   const colorKey = getColorKey(event);
   const colors = COLORS[colorKey];
-  const isComplete = event.actualDate !== null || isExecuted(event);
+  const isComplete = event.actualDate !== undefined || isExecuted(event);
   const needsPlan = isToBePlanned(event);
 
   return (

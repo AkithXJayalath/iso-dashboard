@@ -38,7 +38,7 @@ export const EVENTS_CONFIG: IEventsConfig = {
   toBePlannedStatus: "To be Planned",
   executedStatus: "Executed",
 
-  // Show events due within the next 30 days (plus all overdue)
+  // Show events due within the next 30 days plus all overdue
   upcomingWindowDays: 30,
 
   // Number of header rows at the top of the sheet to skip
