@@ -14,13 +14,12 @@ export function toMidnight(d: Date): Date {
   return out;
 }
 
-
 export function parseExcelDate(val: unknown): Date | null {
   if (val == null || val === "") return null;
 
   if (val instanceof Date) {
     if (isNaN(val.getTime())) return null;
-    return new Date(val.getFullYear(), val.getMonth(), val.getDate());
+    return new Date(val.getUTCFullYear(), val.getUTCMonth(), val.getUTCDate());
   }
 
   if (typeof val === "number" && val > 0) {
@@ -58,7 +57,6 @@ export function getEventStatus(event: ICalendarEvent): IEventStatus {
   const offset = daysBetween(event.plannedDate);
   return { isOverdue: offset > 0, daysOffset: offset };
 }
-
 
 export function filterUpcoming(
   events: ICalendarEvent[],

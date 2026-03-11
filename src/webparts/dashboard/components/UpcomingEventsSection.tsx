@@ -52,7 +52,7 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
     [events],
   );
 
-  //  Derive available month options from data 
+  //  Derive available month options from data
   const monthOptions = React.useMemo(() => {
     const months = new Set<string>();
     activeEvents.forEach((e) => {
@@ -61,7 +61,7 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
     return Array.from(months).map((m) => ({ label: m, value: m }));
   }, [activeEvents]);
 
-  //  Apply selected filter 
+  //  Apply selected filter
   const displayedEvents = React.useMemo((): ICalendarEvent[] => {
     let filtered: ICalendarEvent[];
     if (filterMode === "overdue") {
@@ -77,13 +77,13 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
     return sortEvents(filtered);
   }, [activeEvents, filterMode, selectedMonth]);
 
-  //  Summary counts 
+  //  Summary counts
   const overdueCount = React.useMemo(
     () => filterOverdue(activeEvents).length,
     [activeEvents],
   );
 
-  //  Handlers 
+  //  Handlers
   const handleFilterChange = (mode: TFilterMode): void => {
     setFilterMode(mode);
     if (mode !== "month") setSelectedMonth("");
@@ -146,7 +146,7 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
     setSaveError(null);
   };
 
-  //  Render 
+  //  Render
 
   return (
     <div style={{ marginBottom: 28 }}>
