@@ -18,6 +18,8 @@ interface ICompletionModalProps {
   event: ICalendarEvent | null;
   /** "complete" shows actual date + evidence; "plan" shows planned date only. */
   mode: "complete" | "plan";
+  /** Save error to display inside the modal. */
+  saveError?: string | null;
   /** Called in complete mode. */
   onSubmit: (
     event: ICalendarEvent,
@@ -33,6 +35,7 @@ interface ICompletionModalProps {
 const CompletionModal: React.FC<ICompletionModalProps> = ({
   event,
   mode,
+  saveError,
   onSubmit,
   onPlan,
   onCancel,
@@ -121,6 +124,14 @@ const CompletionModal: React.FC<ICompletionModalProps> = ({
             <Alert
               type="warning"
               message="No evidence provided. Click 'Confirm without evidence' to proceed anyway, or fill in the evidence field below."
+              style={{ marginBottom: 12 }}
+            />
+          )}
+
+          {saveError && (
+            <Alert
+              type="error"
+              message={saveError}
               style={{ marginBottom: 12 }}
             />
           )}

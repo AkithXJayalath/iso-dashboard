@@ -18,7 +18,7 @@ export interface IEventsConfig {
 }
 
 export const EVENTS_CONFIG: IEventsConfig = {
-  fileUniqueId: "4D264DBE-A2CC-4EF4-8CA2-F16CAE687A55",
+ fileUniqueId: "96D0E8F8-B2BE-4A8E-89DB-07267E069F22",
 
   sheetName: "Calendar 2026",
 
