@@ -25,11 +25,11 @@ export const REGISTRIES: IRegistryConfig[] = [
     defaultThresholdDays: 30,
     statusThresholds: {
       "In Progress": 7,
-      "Delayed": 7,
-      "Scheduled": 7,
+      Delayed: 7,
+      Scheduled: 7,
     },
     statusDateFields: {
-       // use created at etc for the default status and Status Change Date for others
+      // use created at etc for the default status and Status Change Date for others
       "In Progress": "Created",
       Delayed: "Status Change Date",
       Scheduled: "Status Change Date",

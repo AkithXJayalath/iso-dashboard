@@ -12,13 +12,11 @@ const { Text } = Typography;
 
 interface IOverviewPageProps {
   siteUrl: string;
-  thresholdDays: number;
   onViewDetails: (registryId: string) => void;
 }
 
 const OverviewPage: React.FC<IOverviewPageProps> = ({
   siteUrl,
-  thresholdDays,
   onViewDetails,
 }) => {
   return (
@@ -40,7 +38,7 @@ const OverviewPage: React.FC<IOverviewPageProps> = ({
           key={registry.id}
           registry={registry}
           siteUrl={siteUrl}
-          thresholdDays={thresholdDays}
+          thresholdDays={registry.defaultThresholdDays}
           onViewDetails={onViewDetails}
         />
       ))}
