@@ -18,10 +18,12 @@ import * as React from "react";
 import { Button, ConfigProvider, Typography } from "antd";
 import { StyleProvider, createCache } from "@ant-design/cssinjs";
 import { REGISTRIES } from "../config/registryConfig";
+import { EXCEL_FINDINGS_SOURCES } from "../config/excelSourcesConfig";
 import ThresholdControl from "./ThresholdControl";
 import RegistryDashboardView from "./RegistryDashboardView";
 import OverviewPage from "./OverviewPage";
 import UpcomingEventsSection from "./UpcomingEventsSection";
+import FindingsSection from "./FindingsSection";
 import styles from "./ISODashboard.module.scss";
 
 const { Title } = Typography;
@@ -117,6 +119,16 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
           <div className={styles.mainContent}>
             {/* Upcoming ISMS Events — shown on the overview page only */}
             {view === "overview" && <UpcomingEventsSection siteUrl={siteUrl} />}
+
+            {/* Findings sections — one per entry in EXCEL_FINDINGS_SOURCES */}
+            {view === "overview" &&
+              EXCEL_FINDINGS_SOURCES.map((source) => (
+                <FindingsSection
+                  key={source.id}
+                  siteUrl={siteUrl}
+                  source={source}
+                />
+              ))}
 
             {view === "overview" ? (
               <OverviewPage

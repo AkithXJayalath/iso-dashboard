@@ -1,10 +1,3 @@
-// CompletionModal.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// antd Modal used for two actions:
-//   mode="complete" — user picks actual date + optional evidence.
-//   mode="plan"     — user picks a planned date only.
-// ─────────────────────────────────────────────────────────────────────────────
-
 import * as React from "react";
 import { Modal, DatePicker, Input, Form, Typography, Alert } from "antd";
 import * as dayjs from "dayjs";

@@ -1,4 +1,3 @@
-// RegistryDashboardView.tsx
 // Renders TimelineChart + StatusPieChart + OverdueItemsPanel for one registry.
 // Handles loading / error states from useRegistryData.
 
