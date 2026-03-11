@@ -27,30 +27,39 @@ interface ITextSection {
   content: string;
 }
 
-const FINDING_SECTION_RE =
-  /\b(Requirement|Observation|Evidence|Non-conformity)\s*:/gi;
+// Matches a line that is purely a section heading — with or without a trailing
+// colon, and supports plural forms (Requirements, Observations, etc.)
+const SECTION_HEADER_RE =
+  /^(Requirements?|Observations?|Evidence|Non-conformity)\s*:?\s*$/i;
 
 function parseFindingText(text: string): ITextSection[] {
   if (!text) return [];
 
-  const parts = text.split(FINDING_SECTION_RE);
+  const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+
   const sections: ITextSection[] = [];
-  if (parts.length <= 1) {
-    return [{ label: "", content: text.trim() }];
+  let currentLabel = "";
+  let currentLines: string[] = [];
+
+  for (const line of lines) {
+    const headerMatch = SECTION_HEADER_RE.exec(line.trim());
+    if (headerMatch) {
+      // Flush previous section
+      const content = currentLines.join("\n").trim();
+      if (content) sections.push({ label: currentLabel, content });
+      currentLabel = headerMatch[1];
+      currentLines = [];
+    } else {
+      currentLines.push(line);
+    }
   }
 
-  let i = 1;
-  while (i < parts.length - 1) {
-    const label = parts[i].trim();
-    const content = parts[i + 1].trim();
-    if (content) sections.push({ label, content });
-    i += 2;
-  }
+  // Flush last section
+  const lastContent = currentLines.join("\n").trim();
+  if (lastContent) sections.push({ label: currentLabel, content: lastContent });
 
   return sections.length > 0 ? sections : [{ label: "", content: text.trim() }];
 }
-
-
 
 const DetailRow: React.FC<{
   label: string;
@@ -202,7 +211,12 @@ const FindingCard: React.FC<IFindingCardProps> = ({ item, source }) => {
                 ellipsis={
                   !textExpanded ? { rows: 3, expandable: false } : false
                 }
-                style={{ margin: 0, fontSize: 13, color: "#323130" }}
+                style={{
+                  margin: 0,
+                  fontSize: 13,
+                  color: "#323130",
+                  whiteSpace: "pre-wrap",
+                }}
               >
                 {findingSections[0].content}
               </Paragraph>
@@ -240,7 +254,12 @@ const FindingCard: React.FC<IFindingCardProps> = ({ item, source }) => {
                   ellipsis={
                     !textExpanded ? { rows: 3, expandable: false } : false
                   }
-                  style={{ margin: 0, fontSize: 13, color: "#323130" }}
+                  style={{
+                    margin: 0,
+                    fontSize: 13,
+                    color: "#323130",
+                    whiteSpace: "pre-wrap",
+                  }}
                 >
                   {findingSections[0].content}
                 </Paragraph>
@@ -264,7 +283,12 @@ const FindingCard: React.FC<IFindingCardProps> = ({ item, source }) => {
                       </Text>
                     )}
                     <Paragraph
-                      style={{ margin: 0, fontSize: 13, color: "#323130" }}
+                      style={{
+                        margin: 0,
+                        fontSize: 13,
+                        color: "#323130",
+                        whiteSpace: "pre-wrap",
+                      }}
                     >
                       {sec.content}
                     </Paragraph>
@@ -363,8 +387,6 @@ const FindingCard: React.FC<IFindingCardProps> = ({ item, source }) => {
     </div>
   );
 };
-
-
 
 interface IFindingsSectionProps {
   siteUrl: string;

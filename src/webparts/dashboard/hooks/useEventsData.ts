@@ -8,7 +8,7 @@ export interface IUseEventsDataResult {
   events: ICalendarEvent[];
   allEvents: ICalendarEvent[];
   loading: boolean;
-  error: string | null;
+  error: string | undefined;
   /**
    * Writes completion data back to the Excel file.
    * @param event       The event being completed.
@@ -364,7 +364,7 @@ async function patchAndUpload(
 export function useEventsData(siteUrl: string): IUseEventsDataResult {
   const [allEvents, setAllEvents] = React.useState<ICalendarEvent[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<string | undefined>(undefined);
   const [refreshCounter, setRefreshCounter] = React.useState(0);
 
   React.useEffect(() => {
@@ -372,7 +372,7 @@ export function useEventsData(siteUrl: string): IUseEventsDataResult {
 
     let cancelled = false;
     setLoading(true);
-    setError(null);
+    setError(undefined);
 
     downloadFile(siteUrl)
       .then((buffer) => {

@@ -3,7 +3,6 @@ import { Button, ConfigProvider, Typography } from "antd";
 import { StyleProvider, createCache } from "@ant-design/cssinjs";
 import { REGISTRIES } from "../config/registryConfig";
 import { EXCEL_FINDINGS_SOURCES } from "../config/excelSourcesConfig";
-import ThresholdControl from "./ThresholdControl";
 import RegistryDashboardView from "./RegistryDashboardView";
 import OverviewPage from "./OverviewPage";
 import UpcomingEventsSection from "./UpcomingEventsSection";
@@ -26,18 +25,12 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
   const [selectedRegistryId, setSelectedRegistryId] = React.useState<string>(
     REGISTRIES[0].id,
   );
-  const [thresholdDays, setThresholdDays] = React.useState<number>(
-    REGISTRIES[0].defaultThresholdDays,
-  );
-
   const selectedRegistry =
     REGISTRIES.find((r) => r.id === selectedRegistryId) || REGISTRIES[0];
 
   const handleViewDetails = (registryId: string): void => {
-    const reg = REGISTRIES.find((r) => r.id === registryId);
-    if (reg) {
+    if (REGISTRIES.find((r) => r.id === registryId)) {
       setSelectedRegistryId(registryId);
-      setThresholdDays(reg.defaultThresholdDays);
     }
     setView("detail");
   };
@@ -54,7 +47,7 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
         prefixCls="iso-ant"
         theme={{
           token: {
-            colorPrimary: "#0078d4", 
+            colorPrimary: "#0078d4",
             colorBgBase: "#ffffff",
             colorTextBase: "#323130",
             borderRadius: 6,
@@ -86,16 +79,8 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
                 level={3}
                 style={{ margin: 0, color: "#0078d4", fontSize: 20 }}
               >
-                {view === "overview"
-                  ? "ISO Registry Tracker"
-                  : selectedRegistry.label}
+                {view === "overview" ? "ISO Dashboard" : selectedRegistry.label}
               </Title>
-            </div>
-            <div className={styles.controls}>
-              <ThresholdControl
-                value={thresholdDays}
-                onChange={setThresholdDays}
-              />
             </div>
           </div>
 
@@ -117,14 +102,13 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
             {view === "overview" ? (
               <OverviewPage
                 siteUrl={siteUrl}
-                thresholdDays={thresholdDays}
                 onViewDetails={handleViewDetails}
               />
             ) : (
               <RegistryDashboardView
                 key={selectedRegistry.id} // force remount on registry switch = clean state
                 registry={selectedRegistry}
-                thresholdDays={thresholdDays}
+                thresholdDays={selectedRegistry.defaultThresholdDays}
                 siteUrl={siteUrl}
               />
             )}

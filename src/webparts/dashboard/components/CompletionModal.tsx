@@ -7,9 +7,9 @@ const { TextArea } = Input;
 const { Text } = Typography;
 
 interface ICompletionModalProps {
-  event: ICalendarEvent | null;
+  event: ICalendarEvent | undefined;
   mode: "complete" | "plan";
-  saveError?: string | null;
+  saveError?: string;
   onSubmit: (
     event: ICalendarEvent,
     actualDate: Date,
@@ -88,7 +88,7 @@ const CompletionModal: React.FC<ICompletionModalProps> = ({
   return (
     <Modal
       prefixCls="iso-ant-modal"
-      open={event != null}
+      open={event !== undefined}
       title={isPlanMode ? "Set Planned Date" : "Mark Event as Completed"}
       okText={
         isPlanMode
