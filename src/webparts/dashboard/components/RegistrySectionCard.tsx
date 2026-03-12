@@ -39,7 +39,7 @@ const RegistrySectionCard: React.FC<IRegistrySectionCardProps> = ({
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <Title level={5} style={{ margin: 0, fontSize: 15, color: "#1d1d1d" }}>
+        <Title level={5} style={{ margin: 0, fontSize: 15, color: "#0078d4" }}>
           {registry.label}
         </Title>
         {!loading && !error && (
@@ -74,7 +74,10 @@ const RegistrySectionCard: React.FC<IRegistrySectionCardProps> = ({
         boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
         marginBottom: 16,
       }}
-      headStyle={{ padding: "10px 16px" }}
+      headStyle={{
+        padding: "10px 16px",
+        background: "linear-gradient(135deg, #f0f5ff 0%, #fff 100%)",
+      }}
       bodyStyle={{ padding: 16 }}
     >
       {loading && (

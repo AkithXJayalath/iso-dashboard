@@ -400,7 +400,16 @@ const FindingsSection: React.FC<IFindingsSectionProps> = ({
   const { rows, loading, error, refresh } = useExcelSource(siteUrl, source);
 
   return (
-    <div style={{ marginBottom: 28 }}>
+    <div
+      style={{
+        background: "#fff",
+        border: "1px solid #e8e8e8",
+        borderRadius: 10,
+        marginBottom: 24,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        overflow: "hidden",
+      }}
+    >
       {/* Section header */}
       <div
         style={{
@@ -408,14 +417,16 @@ const FindingsSection: React.FC<IFindingsSectionProps> = ({
           alignItems: "center",
           justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: 8,
-          marginBottom: 12,
+          gap: 12,
+          padding: "14px 20px",
+          borderBottom: "1px solid #f0f0f0",
+          background: "linear-gradient(135deg, #f0f5ff 0%, #fff 100%)",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Title
-            level={4}
-            style={{ margin: 0, color: "#0078d4", fontSize: 17 }}
+            level={5}
+            style={{ margin: 0, color: "#0078d4", fontSize: 15 }}
           >
             {source.label}
           </Title>
@@ -451,59 +462,60 @@ const FindingsSection: React.FC<IFindingsSectionProps> = ({
           </Button>
         </div>
       </div>
-
-      {/* Content */}
-      {loading ? (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-            gap: 10,
-          }}
-        >
-          {[0, 1, 2].map((i) => (
-            <Skeleton key={i} active paragraph={{ rows: 4 }} />
-          ))}
-        </div>
-      ) : error ? (
-        <Alert
-          type="error"
-          message={`Failed to load ${source.label}`}
-          description={error}
-          showIcon
-          action={
-            <Button prefixCls="iso-ant-btn" size="small" onClick={refresh}>
-              Retry
-            </Button>
-          }
-        />
-      ) : rows.length === 0 ? (
-        <Empty
-          description={
-            <Text type="secondary" style={{ fontSize: 13 }}>
-              No {source.filterStatus} findings — all clear!
-            </Text>
-          }
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          style={{ margin: "16px 0" }}
-        />
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-            gap: 10,
-          }}
-        >
-          {rows.map((item) => (
-            <FindingCard
-              key={`${source.id}-${item.rowIndex}`}
-              item={item}
-              source={source}
-            />
-          ))}
-        </div>
-      )}
+      <div style={{ padding: "16px 20px" }}>
+        {/* Content */}
+        {loading ? (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+              gap: 10,
+            }}
+          >
+            {[0, 1, 2].map((i) => (
+              <Skeleton key={i} active paragraph={{ rows: 4 }} />
+            ))}
+          </div>
+        ) : error ? (
+          <Alert
+            type="error"
+            message={`Failed to load ${source.label}`}
+            description={error}
+            showIcon
+            action={
+              <Button prefixCls="iso-ant-btn" size="small" onClick={refresh}>
+                Retry
+              </Button>
+            }
+          />
+        ) : rows.length === 0 ? (
+          <Empty
+            description={
+              <Text type="secondary" style={{ fontSize: 13 }}>
+                No {source.filterStatus} findings — all clear!
+              </Text>
+            }
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            style={{ margin: "16px 0" }}
+          />
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+              gap: 10,
+            }}
+          >
+            {rows.map((item) => (
+              <FindingCard
+                key={`${source.id}-${item.rowIndex}`}
+                item={item}
+                source={source}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

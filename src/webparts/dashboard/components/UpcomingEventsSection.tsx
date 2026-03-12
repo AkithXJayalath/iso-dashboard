@@ -153,7 +153,16 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
   //  Render
 
   return (
-    <div style={{ marginBottom: 28 }}>
+    <div
+      style={{
+        background: "#fff",
+        border: "1px solid #e8e8e8",
+        borderRadius: 10,
+        marginBottom: 24,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        overflow: "hidden",
+      }}
+    >
       {/*  Section header  */}
       <div
         style={{
@@ -161,14 +170,16 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
           alignItems: "center",
           justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: 8,
-          marginBottom: 12,
+          gap: 12,
+          padding: "14px 20px",
+          borderBottom: "1px solid #f0f0f0",
+          background: "linear-gradient(135deg, #f0f5ff 0%, #fff 100%)",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Title
-            level={4}
-            style={{ margin: 0, color: "#0078d4", fontSize: 17 }}
+            level={5}
+            style={{ margin: 0, color: "#0078d4", fontSize: 15 }}
           >
             Upcoming ISMS Events
           </Title>
@@ -234,105 +245,106 @@ const UpcomingEventsSection: React.FC<IUpcomingEventsSectionProps> = ({
           </Button>
         </Space>
       </div>
+      <div style={{ padding: "16px 20px" }}>
+        {/*  Save error banner removed — error now shown inside the modal  */}
 
-      {/*  Save error banner removed — error now shown inside the modal  */}
+        {/*  Content  */}
+        {loading ? (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+              gap: 10,
+            }}
+          >
+            {[0, 1, 2].map((i) => (
+              <Skeleton key={i} active paragraph={{ rows: 3 }} />
+            ))}
+          </div>
+        ) : error ? (
+          <Alert
+            type="error"
+            message="Failed to load ISMS events"
+            description={error}
+            showIcon
+            action={
+              <Button prefixCls="iso-ant-btn" size="small" onClick={refresh}>
+                Retry
+              </Button>
+            }
+          />
+        ) : displayedEvents.length === 0 ? (
+          <Empty
+            description={
+              <Text type="secondary" style={{ fontSize: 13 }}>
+                {filterMode === "overdue"
+                  ? "No overdue events — everything is on track!"
+                  : filterMode === "month"
+                    ? `No pending events for ${selectedMonth}.`
+                    : "No upcoming events in the next " +
+                      EVENTS_CONFIG.upcomingWindowDays +
+                      " days."}
+              </Text>
+            }
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            style={{ margin: "16px 0" }}
+          />
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+              gap: 10,
+            }}
+          >
+            {displayedEvents.map((event) => (
+              <EventCard
+                key={`${event.rowIndex}-${event.action}`}
+                event={event}
+                onMarkCompleted={handleMarkCompleted}
+                onPlan={handlePlan}
+              />
+            ))}
+          </div>
+        )}
 
-      {/*  Content  */}
-      {loading ? (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: 10,
-          }}
-        >
-          {[0, 1, 2].map((i) => (
-            <Skeleton key={i} active paragraph={{ rows: 3 }} />
-          ))}
-        </div>
-      ) : error ? (
-        <Alert
-          type="error"
-          message="Failed to load ISMS events"
-          description={error}
-          showIcon
-          action={
-            <Button prefixCls="iso-ant-btn" size="small" onClick={refresh}>
-              Retry
-            </Button>
-          }
+        {/* Saving spinner overlay for the modal submit */}
+        {saving && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "rgba(0,0,0,0.15)",
+              zIndex: 2000,
+            }}
+          >
+            <Spin size="large" />
+          </div>
+        )}
+
+        {/*  Completion modal  */}
+        <CompletionModal
+          event={completingEvent}
+          mode="complete"
+          saveError={saveError}
+          onSubmit={handleSubmit}
+          onPlan={() => Promise.resolve()}
+          onCancel={handleModalCancel}
         />
-      ) : displayedEvents.length === 0 ? (
-        <Empty
-          description={
-            <Text type="secondary" style={{ fontSize: 13 }}>
-              {filterMode === "overdue"
-                ? "No overdue events — everything is on track!"
-                : filterMode === "month"
-                  ? `No pending events for ${selectedMonth}.`
-                  : "No upcoming events in the next " +
-                    EVENTS_CONFIG.upcomingWindowDays +
-                    " days."}
-            </Text>
-          }
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          style={{ margin: "16px 0" }}
+
+        {/*  Plan modal  */}
+        <CompletionModal
+          event={planningEvent}
+          mode="plan"
+          saveError={saveError}
+          onSubmit={() => Promise.resolve()}
+          onPlan={handlePlanSubmit}
+          onCancel={handleModalCancel}
         />
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: 10,
-          }}
-        >
-          {displayedEvents.map((event) => (
-            <EventCard
-              key={`${event.rowIndex}-${event.action}`}
-              event={event}
-              onMarkCompleted={handleMarkCompleted}
-              onPlan={handlePlan}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Saving spinner overlay for the modal submit */}
-      {saving && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "rgba(0,0,0,0.15)",
-            zIndex: 2000,
-          }}
-        >
-          <Spin size="large" />
-        </div>
-      )}
-
-      {/*  Completion modal  */}
-      <CompletionModal
-        event={completingEvent}
-        mode="complete"
-        saveError={saveError}
-        onSubmit={handleSubmit}
-        onPlan={() => Promise.resolve()}
-        onCancel={handleModalCancel}
-      />
-
-      {/*  Plan modal  */}
-      <CompletionModal
-        event={planningEvent}
-        mode="plan"
-        saveError={saveError}
-        onSubmit={() => Promise.resolve()}
-        onPlan={handlePlanSubmit}
-        onCancel={handleModalCancel}
-      />
+      </div>
     </div>
   );
 };
