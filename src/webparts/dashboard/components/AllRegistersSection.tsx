@@ -20,12 +20,6 @@ interface IAllRegistersSectionProps {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
 function formatDate(iso: string): string {
   if (!iso) return "";
   const d = new Date(iso);
@@ -36,7 +30,6 @@ function formatDate(iso: string): string {
   });
 }
 
-/** Return a colour tag for a file's extension, or a folder indicator. */
 function FileTypeTag({
   name,
   kind,
@@ -50,7 +43,7 @@ function FileTypeTag({
         color="gold"
         style={{ fontSize: 10, lineHeight: "16px", padding: "0 5px" }}
       >
-        📂 FOLDER
+        FOLDER
       </Tag>
     );
   }
@@ -126,21 +119,6 @@ const AllRegistersSection: React.FC<IAllRegistersSectionProps> = ({
           {formatDate(val)}
         </span>
       ),
-    },
-    {
-      title: "Size",
-      dataIndex: "length",
-      key: "length",
-      width: 90,
-      align: "right" as const,
-      render: (val: number, record: ISharePointFile) =>
-        record.kind === "folder" ? (
-          <span style={{ color: "#bfbfbf", fontSize: 12 }}>—</span>
-        ) : (
-          <span style={{ color: "#8c8c8c", fontSize: 12 }}>
-            {formatBytes(val)}
-          </span>
-        ),
     },
   ];
 
