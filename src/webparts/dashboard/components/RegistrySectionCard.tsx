@@ -53,13 +53,14 @@ const RegistrySectionCard: React.FC<IRegistrySectionCardProps> = ({
       </div>
       <Button
         prefixCls="iso-ant-btn"
-        type="primary"
+        color="default"
+        variant="outlined"
         size="small"
         onClick={handleViewDetails}
         disabled={loading || !!error}
         style={{ fontSize: 12 }}
       >
-        View Details →
+        View Details
       </Button>
     </div>
   );

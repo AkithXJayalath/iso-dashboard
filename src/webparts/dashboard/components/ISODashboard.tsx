@@ -11,6 +11,7 @@ import OverviewPage from "./OverviewPage";
 import UpcomingEventsSection from "./UpcomingEventsSection";
 import FindingsSection from "./FindingsSection";
 import ObjectivesSection from "./ObjectivesSection";
+import AllRegistersSection from "./AllRegistersSection";
 import styles from "./ISODashboard.module.scss";
 
 const { Title } = Typography;
@@ -112,6 +113,9 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
                   source={source}
                 />
               ))}
+
+            {/* All Registers — files in the configured SharePoint folder */}
+            {view === "overview" && <AllRegistersSection siteUrl={siteUrl} />}
 
             {view === "overview" ? (
               <OverviewPage
