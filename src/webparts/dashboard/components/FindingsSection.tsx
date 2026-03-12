@@ -398,6 +398,11 @@ const FindingsSection: React.FC<IFindingsSectionProps> = ({
   source,
 }) => {
   const { rows, loading, error, refresh } = useExcelSource(siteUrl, source);
+  const [showAll, setShowAll] = React.useState(false);
+
+  const PAGE = 4;
+  const visibleRows = showAll ? rows : rows.slice(0, PAGE);
+  const hasMore = rows.length > PAGE;
 
   return (
     <div
@@ -499,21 +504,37 @@ const FindingsSection: React.FC<IFindingsSectionProps> = ({
             style={{ margin: "16px 0" }}
           />
         ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-              gap: 10,
-            }}
-          >
-            {rows.map((item) => (
-              <FindingCard
-                key={`${source.id}-${item.rowIndex}`}
-                item={item}
-                source={source}
-              />
-            ))}
-          </div>
+          <>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+                gap: 10,
+              }}
+            >
+              {visibleRows.map((item) => (
+                <FindingCard
+                  key={`${source.id}-${item.rowIndex}`}
+                  item={item}
+                  source={source}
+                />
+              ))}
+            </div>
+            {hasMore && (
+              <div style={{ textAlign: "center", marginTop: 12 }}>
+                <Button
+                  prefixCls="iso-ant-btn"
+                  size="small"
+                  onClick={() => setShowAll((v) => !v)}
+                  style={{ fontSize: 12, minWidth: 120 }}
+                >
+                  {showAll
+                    ? `▲ Show less`
+                    : `▼ View ${rows.length - PAGE} more`}
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -5,6 +5,7 @@
 // and expand the corresponding DomainCard.
 
 import * as React from "react";
+import { Button } from "antd";
 import { IDomain } from "../utils/objectivesParser";
 import { IScoreThresholds } from "../config/objectivesConfig";
 import OverallScoreSummary from "./OverallScoreSummary";
@@ -19,13 +20,34 @@ const ObjectivesView: React.FC<IObjectivesViewProps> = ({
   domains,
   thresholds,
 }) => {
+  const [showAll, setShowAll] = React.useState(false);
+
+  const PAGE = 4;
+  const visibleDomains = showAll ? domains : domains.slice(0, PAGE);
+  const hasMore = domains.length > PAGE;
+
   return (
     <div>
       <OverallScoreSummary domains={domains} thresholds={thresholds} />
 
-      {domains.map((domain, idx) => (
+      {visibleDomains.map((domain, idx) => (
         <DomainCard key={idx} domain={domain} thresholds={thresholds} />
       ))}
+
+      {hasMore && (
+        <div style={{ textAlign: "center", marginTop: 8, marginBottom: 4 }}>
+          <Button
+            prefixCls="iso-ant-btn"
+            size="small"
+            onClick={() => setShowAll((v) => !v)}
+            style={{ fontSize: 12, minWidth: 140 }}
+          >
+            {showAll
+              ? `▲ Show less`
+              : `▼ View ${domains.length - PAGE} more domains`}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
