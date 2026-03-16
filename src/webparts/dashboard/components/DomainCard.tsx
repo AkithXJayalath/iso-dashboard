@@ -129,11 +129,6 @@ const DomainCard: React.FC<IDomainCardProps> = ({ domain, thresholds }) => {
             {scoreStyle.label}
           </span>
 
-          {/* Weighting */}
-          <Text style={{ fontSize: 10, color: "#8c8c8c" }}>
-            W: {domain.weighting}
-          </Text>
-
           {/* Toggle chevron */}
           <span
             style={{
