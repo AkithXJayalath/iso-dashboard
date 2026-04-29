@@ -562,3 +562,4 @@ gulp clean
 | SharePoint list registries          | `src/…/config/registryConfig.ts`        |
 | Registers document library folder   | `src/…/config/registersDocLibConfig.ts` |
 | Dev server URL                      | `config/serve.json`                     |
+
