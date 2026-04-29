@@ -1,6 +1,35 @@
+import {
+  IObjectivesColumns,
+  IScoreThresholds,
+  OBJECTIVES_COLUMNS,
+  DEFAULT_SCORE_THRESHOLDS,
+} from "./objectivesConfig";
+
+export interface IExcelObjectivesSource {
+  id: string;
+  label: string;
+  fileUniqueId: string;
+  type: "objectives";
+  yearSheetPattern: RegExp;
+  ignoredSheets: string[];
+  columns: IObjectivesColumns;
+  scoreThresholds: IScoreThresholds;
+}
+
+export const EXCEL_OBJECTIVES_SOURCES: IExcelObjectivesSource[] = [
+  {
+    id: "isms-objectives",
+    label: "ISMS Objectives - Information Security Metrics",
+    fileUniqueId: "1443C5A7-7969-4502-AB0E-F3B211E5C373",
+    type: "objectives",
+    yearSheetPattern: /^\d{4}$/,
+    ignoredSheets: ["Cover", "Legend", "Process", "Objectives", "Calculations"],
+    columns: OBJECTIVES_COLUMNS,
+    scoreThresholds: DEFAULT_SCORE_THRESHOLDS,
+  },
+];
 
 export interface IFindingsColumns {
-  /** Row number / finding ID — omit or leave undefined if absent in the sheet */
   number?: number;
   finding?: number;
   clause?: number;
@@ -17,9 +46,8 @@ export interface IFindingsColumns {
 }
 
 export interface IExcelFindingsSource {
-  
   id: string;
-  
+
   label: string;
   fileUniqueId: string;
   sheetName: string;
@@ -29,10 +57,10 @@ export interface IExcelFindingsSource {
   columns: IFindingsColumns;
 }
 
-//  Sources 
+//  Sources
 
 export const EXCEL_FINDINGS_SOURCES: IExcelFindingsSource[] = [
-  //  Internal Audit Findings 
+  //  Internal Audit Findings
   {
     id: "internal-audit-findings",
     label: "2026 Internal Audit Findings",
@@ -42,23 +70,22 @@ export const EXCEL_FINDINGS_SOURCES: IExcelFindingsSource[] = [
     filterStatus: "In Progress",
     headerRows: 1,
     columns: {
-      number: 0, 
+      number: 0,
       finding: 1,
-      clause: 2, 
+      clause: 2,
       category: 3,
-      processArea: 4, 
-      auditee: 5, 
-      auditor: 6, 
-      causeAnalysis: 7, 
-      immediateAction: 8, 
-      correctiveAction: 9, 
-      plannedDate: 10, 
-      status: 11, 
-      followUpComments: 12, 
+      processArea: 4,
+      auditee: 5,
+      auditor: 6,
+      causeAnalysis: 7,
+      immediateAction: 8,
+      correctiveAction: 9,
+      plannedDate: 10,
+      status: 11,
+      followUpComments: 12,
     },
   },
 
- 
   {
     id: "external-audit-findings",
     label: "2026 External Audit Findings",
@@ -68,9 +95,9 @@ export const EXCEL_FINDINGS_SOURCES: IExcelFindingsSource[] = [
     filterStatus: "In Progress",
     headerRows: 1,
     columns: {
-    number: 0,
-      finding: 1, 
-      correctiveAction: 2, 
+      number: 0,
+      finding: 1,
+      correctiveAction: 2,
       status: 3,
       followUpComments: 4,
       // Fields absent in this sheet are simply omitted — undefined is treated

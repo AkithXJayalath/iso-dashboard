@@ -29,8 +29,8 @@ const OverviewPage: React.FC<IOverviewPageProps> = ({
           marginBottom: 16,
         }}
       >
-        Showing all {REGISTRIES.length} registries — click{" "}
-        <strong>View Details</strong> to drill into any one.
+        Showing all {REGISTRIES.length} registries. Click{" "}
+        <strong>View Details</strong> to view more details.
       </Text>
 
       {REGISTRIES.map((registry) => (

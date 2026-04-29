@@ -2,11 +2,16 @@ import * as React from "react";
 import { Button, ConfigProvider, Typography } from "antd";
 import { StyleProvider, createCache } from "@ant-design/cssinjs";
 import { REGISTRIES } from "../config/registryConfig";
-import { EXCEL_FINDINGS_SOURCES } from "../config/excelSourcesConfig";
+import {
+  EXCEL_FINDINGS_SOURCES,
+  EXCEL_OBJECTIVES_SOURCES,
+} from "../config/excelSourcesConfig";
 import RegistryDashboardView from "./RegistryDashboardView";
 import OverviewPage from "./OverviewPage";
 import UpcomingEventsSection from "./UpcomingEventsSection";
 import FindingsSection from "./FindingsSection";
+import ObjectivesSection from "./ObjectivesSection";
+import AllRegistersSection from "./AllRegistersSection";
 import styles from "./ISODashboard.module.scss";
 
 const { Title } = Typography;
@@ -98,6 +103,19 @@ const ISODashboard: React.FC<IISODashboardProps> = ({ siteUrl }) => {
                   source={source}
                 />
               ))}
+
+            {/* ISMS Objectives sections — one per entry in EXCEL_OBJECTIVES_SOURCES */}
+            {view === "overview" &&
+              EXCEL_OBJECTIVES_SOURCES.map((source) => (
+                <ObjectivesSection
+                  key={source.id}
+                  siteUrl={siteUrl}
+                  source={source}
+                />
+              ))}
+
+            {/* All Registers — files in the configured SharePoint folder */}
+            {view === "overview" && <AllRegistersSection siteUrl={siteUrl} />}
 
             {view === "overview" ? (
               <OverviewPage

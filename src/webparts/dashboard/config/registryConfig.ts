@@ -66,8 +66,8 @@ export const REGISTRIES: IRegistryConfig[] = [
   },
   {
     id: "access-review",
-    label: "Access Review",
-    sharepointListName: "Access Review",
+    label: "Access Request",
+    sharepointListName: "Access Request",
     dateField: "Requested at",
     statusField: "Status",
     statuses: [
